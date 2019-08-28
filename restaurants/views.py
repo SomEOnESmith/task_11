@@ -59,6 +59,8 @@ def restaurant_detail(request, restaurant_id):
     return render(request, 'detail.html', context)
 
 def restaurant_create(request):
+    if request.user.is_anonymous:
+        return redirect('signin')
     form = RestaurantForm()
     if request.method == "POST":
         form = RestaurantForm(request.POST, request.FILES)
@@ -73,23 +75,27 @@ def restaurant_create(request):
     return render(request, 'create.html', context)
 
 def item_create(request, restaurant_id):
+    restaurant_obj = Restaurant.objects.get(id=restaurant_id)
+    if not request.user.is_staff and request.user != restaurant_obj.owner:
+        return redirect('page')
     form = ItemForm()
-    restaurant = Restaurant.objects.get(id=restaurant_id)
     if request.method == "POST":
         form = ItemForm(request.POST)
         if form.is_valid():
             item = form.save(commit=False)
-            item.restaurant = restaurant
+            item.restaurant = restaurant_obj
             item.save()
             return redirect('restaurant-detail', restaurant_id)
     context = {
         "form":form,
-        "restaurant": restaurant,
+        "restaurant": restaurant_obj,
     }
     return render(request, 'item_create.html', context)
 
 def restaurant_update(request, restaurant_id):
     restaurant_obj = Restaurant.objects.get(id=restaurant_id)
+    if not request.user.is_staff and request.user != restaurant_obj.owner:
+        return redirect('page')
     form = RestaurantForm(instance=restaurant_obj)
     if request.method == "POST":
         form = RestaurantForm(request.POST, request.FILES, instance=restaurant_obj)
@@ -103,6 +109,12 @@ def restaurant_update(request, restaurant_id):
     return render(request, 'update.html', context)
 
 def restaurant_delete(request, restaurant_id):
+    if not request.user.is_staff:
+        return redirect('page')
     restaurant_obj = Restaurant.objects.get(id=restaurant_id)
     restaurant_obj.delete()
     return redirect('restaurant-list')
+
+def page(request):
+    return render(request,'page.html')
+

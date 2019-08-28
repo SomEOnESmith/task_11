@@ -17,7 +17,7 @@
     <p class="card-text">Closing Time: {{restaurant.closing_time}}</p>
   </div>
   <div class="card-body">
-    <h5 class="card-title">Our Items</h5>
+    <h5 class="card-title">Our Items:</h5>
   </div>
   <ul class="list-group list-group-flush">
     {% for item in items %}
@@ -30,15 +30,22 @@
   </ul>
   <div class="card-body">
     <div class="row text-center">
+    
+    {% if request.user == restaurant.owner or request.user.is_staff %}
+      <div class="col-md-4">
+        <a href="{% url 'restaurant-update' restaurant.id %}" class="btn btn-outline-primary btn-block">Update</a>
+      </div>
+      <div class="col-md-4">
+        <a href="{% url 'item-create' restaurant.id %}" class="btn btn-outline-success btn-block">Add Item</a>
+      </div>  
+    {% endif %}
+
+    {% if request.user.is_staff %}
         <div class="col-md-4">
-            <a href="{% url 'restaurant-update' restaurant.id %}" class="btn btn-outline-primary btn-block">Update</a>
-        </div>
-        <div class="col-md-4">
-            <a href="{% url 'restaurant-delete' restaurant.id %}" class="btn btn-outline-danger btn-block">Delete</a>
-        </div>
-        <div class="col-md-4">
-            <a href="{% url 'item-create' restaurant.id %}" class="btn btn-outline-success btn-block">Add Item</a>
-        </div>
+        <a href="{% url 'restaurant-delete' restaurant.id %}" class="btn btn-outline-danger btn-block">Delete</a>
+    </div>
+    {% endif %}
+
     </div>
   </div>
 </div>

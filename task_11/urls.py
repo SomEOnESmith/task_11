@@ -34,6 +34,7 @@ urlpatterns = [
     path('signup/',views.signup ,name='signup'),
     path('signin/',views.signin ,name='signin'),
     path('signout/',views.signout ,name='signout'),
+    path('accesspage/',views.page ,name='page'),
 ]
 
 if settings.DEBUG:
