@@ -95,6 +95,7 @@ def item_create(request, restaurant_id):
 def restaurant_update(request, restaurant_id):
     restaurant_obj = Restaurant.objects.get(id=restaurant_id)
     if not request.user.is_staff and request.user != restaurant_obj.owner:
+    #if not (request.user.is_staff or request.user == restaurant_obj.owner)
         return redirect('page')
     form = RestaurantForm(instance=restaurant_obj)
     if request.method == "POST":
